@@ -1,3 +1,4 @@
+import datetime
 import logging
 # import secrets
 import requests
@@ -102,9 +103,11 @@ def webhook_tg():
 def send_to_groupme(username, msg_text):
     print("sending to groupme")
     if username != TG_BOT_USERNAME:
+        last_name = "" if username.last_name == None else username.last_name
+        first_name = "" if username.first_name == None else username.first_name
         data = {
             'bot_id': GROUPME_BOT_ID,
-            'text': username.first_name + " " + username.last_name + ": " + msg_text
+            'text': first_name + " " + last_name + ": " + msg_text
         }
         to_str = json.dumps(data)
         result = requests.post("https://api.groupme.com/v3/bots/post", 
@@ -118,6 +121,10 @@ def tg_msg_handler(update, context):
     username = update.message.from_user
     print("Got message from TG!")
     print(update, context)
+    # add date manual handling for now......
+    if update.message.date.timestamp() < 1616223029: 
+        return
+
     # send to groupme
     send_to_groupme(username, message_content)
 
