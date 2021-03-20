@@ -6,12 +6,15 @@ Currently supports bridging only one chat on TG to one chat on Groupme. Multi-ch
 Currently only supports text communication. Images, stickers TBD.
 
 # Installation
-Your milage may vary based on where you are hosting the app. It's been successfully hosted on Heroku and on an Apache server.
-Guidelines for these may be written at some point.
+Your milage may vary based on where you are hosting the app. It's been successfully hosted on Heroku and on an Apache server. Wherever you host it, you should follow instructions for hosting a Flask app (since that's what this is). 
+Guidelines for these may be written at some point. 
 
 ## Requirements
 Python 3 is required.
-The two external packages used are [python-telegram-bot](https://github.com/python-telegram-bot/python-telegram-bot) and [requests](https://pypi.org/project/requests/). 
+The three external packages used are: 
+* [Flask](https://flask.palletsprojects.com/en/1.1.x/)
+* [python-telegram-bot](https://github.com/python-telegram-bot/python-telegram-bot)
+* [requests](https://pypi.org/project/requests/). 
 
 ## Dev Setup
 `pyvenv` is the preferred environment for development. 
