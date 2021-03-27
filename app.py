@@ -135,14 +135,21 @@ def tg_msg_handler(update, context):
 
 def tg_pic_handler(update, context):
     # Receive pic from TG
-    pic_id = update.message.photo.file_id
-    # Get picture
-    pic_file = update.message.photo.get_file()
-    # download to /tmp? 
-
-    # upload using POST
-
-    # remove image in /tmp
+    sent_pics = set()
+    for photo in update.message.photo:
+        if photo.file_unique_id in sent_pics:
+            continue
+        sent_pics.add(photo.file_unique_id)
+        pic_id = photo.file_id
+        # Get picture
+        pic_file = photo.get_file()
+        # download to /tmp?
+        # just download to current working directory
+        file_name = pic_file.download()
+        # upload using post
+        groupme_post_image(file_path)
+        # remove image
+        os.remove(file_name)
 
 def groupme_post_image(file_path):
     # open image
@@ -154,7 +161,8 @@ def groupme_post_image(file_path):
                       data=data,
                       headers={'Content-Type: image/jpeg', 
                                'X-Access-Token: ' + GROUPME_ACCESS_TOKEN})
-
+    print(result)
+    # TODO send to groupme
 
 # Message handler for Groupme messages
 def groupme_msg_handler(update, context):
