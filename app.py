@@ -105,7 +105,7 @@ def webhook_tg():
 
 
 # yoink send_to_groupme from tech server
-def send_to_groupme(username, msg_text):
+def send_to_groupme(username, msg_text, picture_url=None):
     print("sending to groupme")
     if username != TG_BOT_USERNAME:
         last_name = "" if username.last_name == None else username.last_name
@@ -114,6 +114,12 @@ def send_to_groupme(username, msg_text):
             'bot_id': GROUPME_BOT_ID,
             'text': first_name + " " + last_name + ": " + msg_text
         }
+        if picture_url != None:
+            print("sending picture to groupme")
+            data['attachments'] = {
+                'type': 'image',
+                'url': picture_url
+            }
         to_str = json.dumps(data)
         result = requests.post("https://api.groupme.com/v3/bots/post", 
                       data=to_str)
@@ -136,6 +142,9 @@ def tg_msg_handler(update, context):
 def tg_pic_handler(update, context):
     # Receive pic from TG
     sent_pics = set()
+    caption = update.message.caption
+    if caption == None:
+        caption = ""
     for photo in update.message.photo:
         if photo.file_unique_id in sent_pics:
             continue
@@ -147,22 +156,25 @@ def tg_pic_handler(update, context):
         # just download to current working directory
         file_name = pic_file.download()
         # upload using post
-        groupme_post_image(file_name)
+        groupme_post_image(file_name, caption)
         # remove image
         os.remove(file_name)
 
-def groupme_post_image(file_path):
+def groupme_post_image(file_path, caption):
     # open image
     with open(file_path, 'rb') as f:
         data = f.read()
 
     # send POST request
-    result = requests.post("https://api.groupme.com/v3/bots/post", 
-                      data=data,
-                      headers={'Content-Type': 'image/jpeg', 
-                               'X-Access-Token': GROUPME_ACCESS_TOKEN})
-    print(result)
-    # TODO send to groupme
+    result = requests.post("https://image.groupme.com/pictures", 
+                           data=data,
+                           headers={'Content-Type': 'image/png', 
+                                    'X-Access-Token': GROUPME_ACCESS_TOKEN})
+    print("Image attempt response")
+    json_data = json.loads(result.text)
+    picture_url = json_data['payload']['picture_url']
+    # send to groupme
+    send_to_groupme(username, caption, picture_url)
 
 # Message handler for Groupme messages
 def groupme_msg_handler(update, context):
