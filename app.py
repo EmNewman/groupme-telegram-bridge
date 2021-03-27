@@ -1,10 +1,8 @@
 import datetime
 import logging
-# import secrets
 import requests
 from telegram import Bot, Update
 from telegram.ext import MessageHandler, TypeHandler, Filters, Dispatcher
-# for heroku only
 import os
 import json
 # from groupy import Client
@@ -36,20 +34,10 @@ def setup():
     logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                      level=logging.INFO)
 
-    # # TODO until i figure out webhooks we will just use polling.
-    # updater = Updater(token=TG_BOT_API_TOKEN, use_context=True)
-    # dispatcher = updater.dispatcher
-    # tg_text_handler = MessageHandler(Filters.text & (~Filters.command), tg_msg_handler)
-    # dispatcher.add_handler(tg_text_handler)
-
     # Set up webhook for TG
     bot = Bot(TG_BOT_API_TOKEN)
     bot.set_webhook(WEBHOOK_URL+"/telegram")
     dispatcher = Dispatcher(bot, None, workers=0)
-
-
-    # TODO add photo handling, see here: 
-    # https://python-telegram-bot.readthedocs.io/en/latest/telegram.message.html#telegram.Message 
 
     # Add text handling
     tg_text_handler = MessageHandler(Filters.text & (~Filters.command), tg_msg_handler)
@@ -85,9 +73,6 @@ class GroupmeMessage():
 @app.route('/groupme', methods=['POST'])
 def webhook_groupme():
     data = request.get_json()
-    # TODO remove
-    print('Received {} to Groupme webhook'.format(data))
-
     # add message to dispatch
     gm_msg = GroupmeMessage(data)
     dispatcher.process_update(gm_msg)
@@ -97,8 +82,6 @@ def webhook_groupme():
 @app.route('/telegram', methods=['POST'])
 def webhook_tg():
     data = request.get_json()
-    print('Received {} to TG webhook'.format(data))
-
     update = Update.de_json(data, bot)
     dispatcher.process_update(update)
     return "Done"
@@ -106,7 +89,6 @@ def webhook_tg():
 
 # yoink send_to_groupme from tech server
 def send_to_groupme(username, msg_text, picture_url=None):
-    print("sending to groupme")
     if username != TG_BOT_USERNAME:
         last_name = "" if username.last_name == None else username.last_name
         first_name = "" if username.first_name == None else username.first_name
@@ -115,24 +97,19 @@ def send_to_groupme(username, msg_text, picture_url=None):
             'text': first_name + " " + last_name + ": " + msg_text
         }
         if picture_url != None:
-            print("sending picture to groupme")
             data['attachments'] = [{
                 'type': 'image',
                 'url': picture_url
             }]
         to_str = json.dumps(data)
-        print(to_str)
         result = requests.post("https://api.groupme.com/v3/bots/post", 
                       data=to_str)
-        print(result.text)
 
 # Message handler for Telegram messages
 def tg_msg_handler(update, context):
     # receive message from TG
     message_content = update.message.text
     username = update.message.from_user
-    print("Got message from TG!")
-    print(update, context)
     # add date manual handling for now......
     if update.message.date.timestamp() < 1616223029: 
         return
@@ -171,7 +148,6 @@ def groupme_post_image(username, file_path, caption):
                            data=data,
                            headers={'Content-Type': 'image/png', 
                                     'X-Access-Token': GROUPME_ACCESS_TOKEN})
-    print("Image attempt response")
     json_data = json.loads(result.text)
     picture_url = json_data['payload']['picture_url']
     # send to groupme
@@ -180,7 +156,6 @@ def groupme_post_image(username, file_path, caption):
 # Message handler for Groupme messages
 def groupme_msg_handler(update, context):
     # create message
-    print("Got message from Groupme!")
     msg = update.name + ": " + update.text 
     if update.name == GROUPME_BOT_NAME:
         return
