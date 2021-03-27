@@ -159,8 +159,8 @@ def groupme_post_image(file_path):
     # send POST request
     result = requests.post("https://api.groupme.com/v3/bots/post", 
                       data=data,
-                      headers={'Content-Type: image/jpeg', 
-                               'X-Access-Token: ' + GROUPME_ACCESS_TOKEN})
+                      headers={'Content-Type': 'image/jpeg', 
+                               'X-Access-Token': GROUPME_ACCESS_TOKEN})
     print(result)
     # TODO send to groupme
 
