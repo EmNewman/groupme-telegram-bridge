@@ -116,10 +116,10 @@ def send_to_groupme(username, msg_text, picture_url=None):
         }
         if picture_url != None:
             print("sending picture to groupme")
-            data['attachments'] = {
+            data['attachments'] = [{
                 'type': 'image',
                 'url': picture_url
-            }
+            }]
         to_str = json.dumps(data)
         print(to_str)
         result = requests.post("https://api.groupme.com/v3/bots/post", 
