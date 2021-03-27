@@ -184,8 +184,14 @@ def groupme_msg_handler(update, context):
     msg = update.name + ": " + update.text 
     if update.name == GROUPME_BOT_NAME:
         return
+    # Add attachment if necessary
+    for item in update.attachments:
+        if item['type'] == "image":
+            context.bot.send_photo(chat_id=TG_CHAT_ID, photo=item['url'], caption=msg)
+
     # send to TG
-    context.bot.send_message(chat_id=TG_CHAT_ID, text=msg)
+    if len(update.attachments) == 0:
+        context.bot.send_message(chat_id=TG_CHAT_ID, text=msg)
 
 def main():
     app.run()
