@@ -121,6 +121,7 @@ def send_to_groupme(username, msg_text, picture_url=None):
                 'url': picture_url
             }
         to_str = json.dumps(data)
+        print(to_str)
         result = requests.post("https://api.groupme.com/v3/bots/post", 
                       data=to_str)
         print(result.text)
