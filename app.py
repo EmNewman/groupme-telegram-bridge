@@ -147,21 +147,19 @@ def tg_pic_handler(update, context):
     username = update.message.from_user
     if caption == None:
         caption = ""
-    for photo in update.message.photo:
-        print("id: " + photo.file_id)
-        if photo.file_id in sent_pics:
-            continue
-        sent_pics.add(photo.file_id)
-        pic_id = photo.file_id
-        # Get picture
-        pic_file = photo.get_file()
-        # download to /tmp?
-        # just download to current working directory
-        file_name = pic_file.download()
-        # upload using post
-        groupme_post_image(username, file_name, caption)
-        # remove image
-        os.remove(file_name)
+    # for photo in update.message.photo:
+    photo = update.message.photo[0]
+    sent_pics.add(photo.file_id)
+    pic_id = photo.file_id
+    # Get picture
+    pic_file = photo.get_file()
+    # download to /tmp?
+    # just download to current working directory
+    file_name = pic_file.download()
+    # upload using post
+    groupme_post_image(username, file_name, caption)
+    # remove image
+    os.remove(file_name)
 
 def groupme_post_image(username, file_path, caption):
     # open image
