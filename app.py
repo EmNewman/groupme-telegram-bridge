@@ -147,7 +147,7 @@ def tg_pic_handler(update, context):
         # just download to current working directory
         file_name = pic_file.download()
         # upload using post
-        groupme_post_image(file_path)
+        groupme_post_image(file_name)
         # remove image
         os.remove(file_name)
 
