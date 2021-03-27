@@ -15,6 +15,7 @@ TG_CHAT_ID = os.environ.get('TG_CHAT_ID')
 TG_BOT_API_TOKEN = os.environ.get('TG_BOT_API_TOKEN')
 WEBHOOK_URL = os.environ.get('WEBHOOK_URL')
 GROUPME_BOT_NAME = os.environ.get('GROUPME_BOT_NAME')
+GROUPME_ACCESS_TOKEN = os.environ.get('GROUPME_ACCESS_TOKEN')
 
 # let's use flask
 from flask import Flask, request 
@@ -53,6 +54,10 @@ def setup():
     # Add text handling
     tg_text_handler = MessageHandler(Filters.text & (~Filters.command), tg_msg_handler)
     dispatcher.add_handler(tg_text_handler)
+
+    # Add TG photo handling
+    tg_photo_handler = MessageHandler(Filters.photo, tg_pic_handler)
+    dispatcher.add_handler(tg_photo_handler)
 
     # custom handler for receiving Groupme messages
     groupme_handler = TypeHandler(GroupmeMessage, groupme_msg_handler)
@@ -127,6 +132,29 @@ def tg_msg_handler(update, context):
 
     # send to groupme
     send_to_groupme(username, message_content)
+
+def tg_pic_handler(update, context):
+    # Receive pic from TG
+    pic_id = update.message.photo.file_id
+    # Get picture
+    pic_file = update.message.photo.get_file()
+    # download to /tmp? 
+
+    # upload using POST
+
+    # remove image in /tmp
+
+def groupme_post_image(file_path):
+    # open image
+    with open(file_path, 'rb') as f:
+        data = f.read()
+
+    # send POST request
+    result = requests.post("https://api.groupme.com/v3/bots/post", 
+                      data=data,
+                      headers={'Content-Type: image/jpeg', 
+                               'X-Access-Token: ' + GROUPME_ACCESS_TOKEN})
+
 
 # Message handler for Groupme messages
 def groupme_msg_handler(update, context):
