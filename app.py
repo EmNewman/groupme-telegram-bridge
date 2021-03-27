@@ -148,9 +148,10 @@ def tg_pic_handler(update, context):
     if caption == None:
         caption = ""
     for photo in update.message.photo:
-        if photo.file_unique_id in sent_pics:
+        print("id: " + photo.file_id)
+        if photo.file_id in sent_pics:
             continue
-        sent_pics.add(photo.file_unique_id)
+        sent_pics.add(photo.file_id)
         pic_id = photo.file_id
         # Get picture
         pic_file = photo.get_file()
