@@ -143,6 +143,7 @@ def tg_pic_handler(update, context):
     # Receive pic from TG
     sent_pics = set()
     caption = update.message.caption
+    username = update.message.from_user
     if caption == None:
         caption = ""
     for photo in update.message.photo:
@@ -156,11 +157,11 @@ def tg_pic_handler(update, context):
         # just download to current working directory
         file_name = pic_file.download()
         # upload using post
-        groupme_post_image(file_name, caption)
+        groupme_post_image(username, file_name, caption)
         # remove image
         os.remove(file_name)
 
-def groupme_post_image(file_path, caption):
+def groupme_post_image(username, file_path, caption):
     # open image
     with open(file_path, 'rb') as f:
         data = f.read()
